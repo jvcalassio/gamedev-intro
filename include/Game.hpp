@@ -1,11 +1,16 @@
 #ifndef __GAME__
 #define __GAME__
-#include <string>
 #define INCLUDE_SDL
+#include <string>
 #include "SDL_include.h"
-
 #include "State.hpp"
 
+/**
+ * Main game class
+ * Manages the gameloop; holds window and renderer instances
+ * Starts SDL2 functionalities
+ * Singleton
+ * */
 class Game {
     private:
         Game(std::string title, int width, int height);
