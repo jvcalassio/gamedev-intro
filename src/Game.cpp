@@ -1,13 +1,16 @@
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
-#include "../include/SDL_include.h"
 #include <string>
 #include <iostream>
-
+#include "../include/SDL_include.h"
 #include "../include/Game.hpp"
 
 Game* Game::instance = nullptr;
 
+/**
+ * Provides the global game instance
+ * Creates a new one, if it's not instantiated yet
+ * */
 Game& Game::GetInstance() {
     if(instance != nullptr) {
         return *instance;
@@ -16,6 +19,12 @@ Game& Game::GetInstance() {
     return *instance;
 }
 
+/**
+ * Initializes all the SDL2 functions, along with
+ * SDL2_image, SDL2_mixer
+ * Exits if there's any error on loading SDL2
+ * Creates the first state
+ * */
 Game::Game(std::string title, int width, int height) {
     if(instance != nullptr) {
         std::cout << "ih deu erro" << std::endl;
@@ -25,18 +34,18 @@ Game::Game(std::string title, int width, int height) {
     }
 
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
-        std::cout << "ih deu erro ao iniciar o sdl" << std::endl;
+        std::cout << "ih deu erro ao iniciar o sdl: " << SDL_GetError() << std::endl;
         exit(0);
     }
 
     if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0) {
-        std::cout << "ih deu erro ao iniciar o sdl image" << std::endl;
+        std::cout << "ih deu erro ao iniciar o sdl image: " << SDL_GetError() << std::endl;
         exit(0);
     }
 
     Mix_Init(MIX_INIT_OGG);
     if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0) {
-        std::cout << "ih deu erro ao iniciar o sdl mixer" << std::endl;
+        std::cout << "ih deu erro ao iniciar o sdl mixer: " << SDL_GetError() << std::endl;
         exit(0);
     }
     Mix_AllocateChannels(32);
@@ -47,11 +56,14 @@ Game::Game(std::string title, int width, int height) {
     state = new State();
 
     if(window == nullptr || renderer == nullptr) {
-        std::cout << "ih deu erro na janela" << std::endl;
+        std::cout << "ih deu erro na janela: " << SDL_GetError() << std::endl;
         exit(0);
     }
 }
 
+/**
+ * Unloads SDL2 functions
+ * */
 Game::~Game() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -68,6 +80,9 @@ SDL_Renderer* Game::GetRenderer() {
     return renderer;
 }
 
+/**
+ * Main Game Loop
+ * */
 void Game::Run() {
     while(!state->QuitRequested()) {
         state->Update(1); // 1?

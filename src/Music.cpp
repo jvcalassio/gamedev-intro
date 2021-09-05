@@ -1,5 +1,5 @@
-#include "../include/Music.hpp"
 #include <iostream>
+#include "../include/Music.hpp"
 
 Music::Music() {
     music = nullptr;
@@ -33,8 +33,7 @@ void Music::Open(std::string file) {
     music = Mix_LoadMUS(file.c_str());
 
     if(!IsOpen()) {
-        std::cout << "ih deu erro no load music" << std::endl;
-        exit(0);
+        std::cout << "ih deu erro no load music: " << SDL_GetError() << std::endl;
     }
 }
 
