@@ -1,18 +1,10 @@
 #ifndef __SPRITE__
 #define __SPRITE__
-#define INCLUDE_SDL
 #include <string>
+#define INCLUDE_SDL
 #include "SDL_include.h"
-#include "Component.hpp"
 
-/**
- * Sprite 
- * Manages SDL2 functions for image handling (load, clip, render)
- * 
- * Implemented as a Component since it's meant to be used as an
- * element of GameObject
- * */
-class Sprite : public Component {
+class Sprite {
     private:
         SDL_Texture* texture;
         int width;
@@ -20,17 +12,15 @@ class Sprite : public Component {
         SDL_Rect clipRect;
 
     public:
-        Sprite(GameObject& associated);
-        explicit Sprite(std::string file, GameObject& associated);
+        Sprite();
+        Sprite(std::string file);
         ~Sprite();
         void Open(std::string file);
         void SetClip(int x, int y, int w, int h);
-        void Render();
+        void Render(int x, int y);
         int GetWidth();
         int GetHeight();
         bool IsOpen();
-        void Update(float dt);
-        bool Is(std::string type);
 };
 
 #endif

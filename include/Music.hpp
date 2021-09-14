@@ -1,13 +1,9 @@
 #ifndef __MUSIC__
 #define __MUSIC__
-#define INCLUDE_SDL_MIXER
 #include <string>
+#define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
 
-/**
- * Game Music
- * Manages SDL2 functions for background music
- * */
 class Music {
     private:
         Mix_Music* music;
