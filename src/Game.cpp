@@ -2,6 +2,8 @@
 #define INCLUDE_SDL_MIXER
 #include <string>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include "../include/SDL_include.h"
 #include "../include/Game.hpp"
 
@@ -59,6 +61,8 @@ Game::Game(std::string title, int width, int height) {
         std::cout << "ih deu erro na janela: " << SDL_GetError() << std::endl;
         exit(0);
     }
+
+    srand(time(NULL));
 }
 
 /**
