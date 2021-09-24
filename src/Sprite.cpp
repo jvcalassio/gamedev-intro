@@ -1,7 +1,7 @@
 #define INCLUDE_SDL_IMAGE
-#include <iostream>
 #include "../include/Sprite.hpp"
 #include "../include/Game.hpp"
+#include "../include/Resources.hpp"
 
 Sprite::Sprite(GameObject& associated) : Component(associated) {
     texture = nullptr;
@@ -12,25 +12,15 @@ Sprite::Sprite(std::string file, GameObject& associated) : Component(associated)
     Open(file);
 }
 
-Sprite::~Sprite() {
-    if(IsOpen()) SDL_DestroyTexture(texture);
-}
+Sprite::~Sprite() {}
 
 /**
- * Loads the {file} image to the texture buffers
+ * Loads the {file} image to the texture buffer
  * and sets it's width and height
  * */
 void Sprite::Open(std::string file) {
-    if(IsOpen()) {
-        SDL_DestroyTexture(texture);
-    }
-    
-    Game& game = Game::GetInstance();
-    texture = IMG_LoadTexture(game.GetRenderer(), file.c_str());
+    texture = Resources::GetImage(file);
 
-    if(!IsOpen()) {
-        std::cout << "ih deu erro no load texture: " << SDL_GetError() << std::endl;
-    }
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
 
     SetClip(0, 0, width, height);
@@ -50,9 +40,17 @@ void Sprite::SetClip(int x, int y, int w, int h) {
  * Renders this sprite on the main renderer
  * */
 void Sprite::Render() {
+    this->Render(associated.box.x, associated.box.y);
+}
+
+/**
+ * Renders this sprite on the main renderer
+ * at position x,y
+ * */
+void Sprite::Render(float x,  float y) {
     SDL_Rect dst;
-    dst.x = associated.box.x;
-    dst.y = associated.box.y;
+    dst.x = x;
+    dst.y = y;
     dst.w = clipRect.w;
     dst.h = clipRect.h;
 
@@ -74,9 +72,7 @@ bool Sprite::IsOpen() {
     return (texture != nullptr);
 }
 
-void Sprite::Update(float dt) {
-
-}
+void Sprite::Update(float dt) {}
 
 bool Sprite::Is(std::string type) {
     return type == "Sprite";

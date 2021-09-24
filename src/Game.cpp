@@ -6,6 +6,7 @@
 #include <ctime>
 #include "../include/SDL_include.h"
 #include "../include/Game.hpp"
+#include "../include/Resources.hpp"
 
 Game* Game::instance = nullptr;
 
@@ -95,4 +96,9 @@ void Game::Run() {
         
         SDL_Delay(33);
     }
+
+    // unloads resources
+    Resources::ClearImages();
+    Resources::ClearSounds();
+    Resources::ClearMusics();
 }

@@ -2,6 +2,7 @@
 #include "../include/State.hpp"
 #include "../include/Face.hpp"
 #include "../include/Sound.hpp"
+#include "../include/TileMap.hpp"
 
 /**
  * Starts the background image object
@@ -12,6 +13,13 @@ State::State() {
     GameObject* bgobj = new GameObject();
     bgobj->AddComponent(new Sprite("./assets/img/ocean.jpg", *bgobj));
 	objectArray.emplace_back(bgobj);
+
+	GameObject* tm = new GameObject();
+	TileSet* ts = new TileSet(64, 64, "./assets/img/tileset.png");
+	tm->AddComponent(new TileMap("./assets/map/tileMap.txt", ts, *tm));
+	tm->box.x = 0;
+	tm->box.y = 0;
+	objectArray.emplace_back(tm);
 
     music = new Music("./assets/audio/stageState.ogg");
     music->Play();
@@ -82,7 +90,6 @@ void State::AddObject(int mouseX, int mouseY) {
 
     Face* fc = new Face(*enemy);
 
-
     enemy->AddComponent(es);
 	enemy->AddComponent(sn);
     enemy->AddComponent(fc);
@@ -101,11 +108,11 @@ void State::LoadAssets() {
  * */
 void State::Update(float dt) {
     Input();
-    for(int i=0;i<objectArray.size();i++) {
+    for(unsigned int i=0;i<objectArray.size();i++) {
         objectArray[i]->Update(dt);
     }
 
-    for(int i=0;i<objectArray.size();i++) {
+    for(unsigned int i=0;i<objectArray.size();i++) {
         if(objectArray[i]->IsDead()) {
             objectArray.erase(objectArray.begin() + i);
         }
@@ -116,7 +123,7 @@ void State::Update(float dt) {
  * Renders the current gameobjects
  * */
 void State::Render() {
-    for(int i=0;i<objectArray.size();i++) {
+    for(unsigned int i=0;i<objectArray.size();i++) {
         objectArray[i]->Render();
     }
 }

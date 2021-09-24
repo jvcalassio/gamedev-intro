@@ -1,20 +1,17 @@
 #include <iostream>
 #include "../include/Music.hpp"
+#include "../include/Resources.hpp"
 
 Music::Music() {
     music = nullptr;
 }
 
-Music::Music(std::string file) {
-    music = nullptr;
+Music::Music(std::string file) : Music() {
     Open(file);
 }
 
 Music::~Music() {
-    if(IsOpen()) {
-        Stop();
-        Mix_FreeMusic(music);
-    }
+    if(IsOpen()) Stop();
 }
 
 void Music::Play(int times) {
@@ -30,11 +27,7 @@ void Music::Stop(int msToStop) {
 }
 
 void Music::Open(std::string file) {
-    music = Mix_LoadMUS(file.c_str());
-
-    if(!IsOpen()) {
-        std::cout << "ih deu erro no load music: " << SDL_GetError() << std::endl;
-    }
+    music = Resources::GetMusic(file);
 }
 
 bool Music::IsOpen() {
