@@ -1,7 +1,5 @@
 #include "../include/TileMap.hpp"
 #include <fstream>
-#include <algorithm>
-#include <iostream>
 
 TileMap::TileMap(std::string file, TileSet* tileSet, GameObject&  associated) : Component(associated) {
     this->tileSet = tileSet;
