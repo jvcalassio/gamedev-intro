@@ -61,6 +61,7 @@ void Resources::ClearMusics() {
     for(auto& i : Resources::musicTable) {
         Mix_FreeMusic(i.second);
     }
+    Resources::musicTable.clear();
 }
 
 /**
@@ -88,4 +89,5 @@ void Resources::ClearSounds() {
     for(auto& i : Resources::soundTable) {
         Mix_FreeChunk(i.second);
     }
+    Resources::soundTable.clear();
 }
