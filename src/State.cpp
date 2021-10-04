@@ -76,8 +76,8 @@ void State::Update(float dt) {
 
     // new penguin
     if(inp.KeyPress(SPACE_KEY)) {
-    Vec2 objPos = Vec2(200, 0).rotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(inp.GetMouseX(), inp.GetMouseY());
-    AddObject((int)objPos.x, (int)objPos.y);
+        Vec2 objPos = Vec2(200, 0).rotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(inp.GetMouseX(), inp.GetMouseY());
+        AddObject((int)objPos.x, (int)objPos.y);
     }
 
     for(unsigned int i=0;i<objectArray.size();i++) {
@@ -105,9 +105,11 @@ void State::Render() {
         }
     }
 
-    // renders the clouds above all other sprites
+    // renders the clouds (or any other level above) above all other sprites
     if(tm != nullptr) {
-        tm->RenderLayer(1, Camera::pos.x * 1.5, Camera::pos.y * 1.5);
+        for(int i=2;i<=tm->GetDepth();i++) {
+            tm->RenderLayer(i-1, Camera::pos.x * i, Camera::pos.y * i);
+        }
     }
 }
 
