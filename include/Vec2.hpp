@@ -14,7 +14,9 @@ class Vec2 {
         Vec2(float x, float y);
 
         Vec2 operator+ (const Vec2& point);
+        void operator+= (const Vec2& point);
         Vec2 operator- (const Vec2& point);
+        void operator-= (const Vec2& point);
         friend Vec2 operator* (float value, const Vec2& point);
         friend Vec2 operator* (const Vec2& point, float value);
         bool operator== (const Vec2& point);

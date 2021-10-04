@@ -9,9 +9,7 @@ Sound::Sound(std::string file, GameObject& associated) : Sound(associated) {
     Open(file);
 }
 
-Sound::~Sound() {
-    if(IsOpen()) Mix_HaltChannel(channel);
-}
+Sound::~Sound() {}
 
 void Sound::Play(int times) {
     if(IsOpen()) channel = Mix_PlayChannel(-1, chunk, times - 1);

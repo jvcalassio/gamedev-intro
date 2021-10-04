@@ -1,5 +1,6 @@
-#include "../include/TileMap.hpp"
 #include <fstream>
+#include "../include/TileMap.hpp"
+#include "../include/Camera.hpp"
 
 TileMap::TileMap(std::string file, TileSet* tileSet, GameObject&  associated) : Component(associated) {
     this->tileSet = tileSet;
@@ -58,8 +59,8 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY) {
     for(int i=0;i<mapHeight;i++) {
         for(int j=0;j<mapWidth;j++) {
             int block = tileMatrix[ this->At(j,i,layer) ];
-            float xpos = tileSet->GetTileWidth() * j;
-            float ypos = tileSet->GetTileHeight() * i;
+            float xpos = (tileSet->GetTileWidth() * j) - cameraX;
+            float ypos = (tileSet->GetTileHeight() * i) - cameraY;
             tileSet->RenderTile(block, xpos, ypos);
         }
     }
@@ -70,7 +71,8 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY) {
  * */
 void TileMap::Render() {
     for(int i=0;i<mapDepth;i++) {
-        this->RenderLayer(i, associated.box.x, associated.box.y);
+        // multiply camera position by depth for the parallax effect
+        this->RenderLayer(i, Camera::pos.x * (i+1), Camera::pos.y * (i+1));
     }
 }
 

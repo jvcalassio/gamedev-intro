@@ -18,6 +18,9 @@ class Rect {
         Rect(float x, float y, float w, float h);
         friend Rect operator+ (const Rect& rec, const Vec2& point);
         friend Rect operator+ (const Vec2& point, const Rect& rec);
+        friend Rect operator- (const Rect& rec, const Vec2& point);
+        void operator+= (const Vec2& rec);
+        void operator-= (const Vec2& rec);
         Vec2 center() const;
         float distance_to(const Rect& to);
         bool contains(const Vec2& point);

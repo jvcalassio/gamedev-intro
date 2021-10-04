@@ -1,6 +1,6 @@
+#include <iostream>
 #include "../include/Resources.hpp"
 #include "../include/Game.hpp"
-#include <iostream>
 
 // makes sure that the static props are initialized
 std::unordered_map<std::string, SDL_Texture*> Resources::imageTable;

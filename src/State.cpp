@@ -3,6 +3,9 @@
 #include "../include/Face.hpp"
 #include "../include/Sound.hpp"
 #include "../include/TileMap.hpp"
+#include "../include/InputManager.hpp"
+#include "../include/Camera.hpp"
+#include "../include/CameraFollower.hpp"
 
 /**
  * Starts the background image object
@@ -12,6 +15,7 @@ State::State() {
     quitRequested = false;
     GameObject* bgobj = new GameObject();
     bgobj->AddComponent(new Sprite("./assets/img/ocean.jpg", *bgobj));
+    bgobj->AddComponent(new CameraFollower(*bgobj)); // makes bg static
 	objectArray.emplace_back(bgobj);
 
 	GameObject* tm = new GameObject();
@@ -33,49 +37,6 @@ State::~State() {
 }
 
 /**
- * Handles input (temporary)
- * */
-void State::Input() {
-    SDL_Event event;
-	int mouseX, mouseY;
-
-	SDL_GetMouseState(&mouseX, &mouseY);
-	while (SDL_PollEvent(&event)) {
-		// new quit handler
-		if(event.type == SDL_QUIT) {
-			quitRequested = true;
-		}
-		if(event.type == SDL_MOUSEBUTTONDOWN) {
-			// iterates from end to beggining
-			// (prevents clicks on objects that are under other objects)
-			for(int i = objectArray.size() - 1; i >= 0; --i) {
-				// temporary spaghetti
-				GameObject* go = (GameObject*) objectArray[i].get();
-
-				if(go->box.contains( Vec2((float) mouseX, (float) mouseY) )) {
-					Face* face = (Face*) go->GetComponent( "Face" );
-					if ( nullptr != face && !face->IsDead()) {
-						// damages
-						face->Damage(std::rand() % 10 + 10);
-						// assures that it hits only the first one found
-						break;
-					}
-				}
-			}
-		}
-		if( event.type == SDL_KEYDOWN ) {
-			// quit if ESC is clicked
-			if( event.key.keysym.sym == SDLK_ESCAPE ) {
-				quitRequested = true;
-			} else {
-				Vec2 objPos = Vec2( 200, 0 ).rotated( -M_PI + M_PI*(rand() % 1001)/500.0 ) + Vec2( mouseX, mouseY );
-				AddObject((int)objPos.x, (int)objPos.y);
-			}
-		}
-	}
-}
-
-/**
  * Add objects to this state at the {mouseX, mouseY} position
  * */
 void State::AddObject(int mouseX, int mouseY) {
@@ -85,6 +46,8 @@ void State::AddObject(int mouseX, int mouseY) {
 	// mouseX,Y represents the box center
     enemy->box.x = mouseX - (enemy->box.w / 2);
     enemy->box.y = mouseY - (enemy->box.h / 2);
+
+    enemy->box += Camera::pos;
 
 	Sound* sn = new Sound("./assets/audio/boom.wav", *enemy);
 
@@ -107,7 +70,16 @@ void State::LoadAssets() {
  * Runs at every gameloop iteration
  * */
 void State::Update(float dt) {
-    Input();
+	InputManager& inp = InputManager::GetInstance();
+    quitRequested = inp.QuitRequested() || inp.IsKeyDown(ESCAPE_KEY);
+    Camera::Update(dt);
+
+    // new penguin
+	if(inp.KeyPress(SPACE_KEY)) {
+		Vec2 objPos = Vec2(200, 0).rotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(inp.GetMouseX(), inp.GetMouseY());
+		AddObject((int)objPos.x, (int)objPos.y);
+	}
+
     for(unsigned int i=0;i<objectArray.size();i++) {
         objectArray[i]->Update(dt);
     }
@@ -123,8 +95,19 @@ void State::Update(float dt) {
  * Renders the current gameobjects
  * */
 void State::Render() {
+    TileMap* tm = nullptr;
     for(unsigned int i=0;i<objectArray.size();i++) {
-        objectArray[i]->Render();
+        if(objectArray[i]->GetComponent("TileMap") != nullptr) {
+            tm = (TileMap*) objectArray[i]->GetComponent("TileMap");
+            tm->RenderLayer(0, Camera::pos.x, Camera::pos.y);
+        } else {
+            objectArray[i]->Render();
+        }
+    }
+
+    // renders the clouds above all other sprites
+    if(tm != nullptr) {
+        tm->RenderLayer(1, Camera::pos.x * 1.5, Camera::pos.y * 1.5);
     }
 }
 

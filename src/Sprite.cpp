@@ -2,6 +2,7 @@
 #include "../include/Sprite.hpp"
 #include "../include/Game.hpp"
 #include "../include/Resources.hpp"
+#include "../include/Camera.hpp"
 
 Sprite::Sprite(GameObject& associated) : Component(associated) {
     texture = nullptr;
@@ -40,7 +41,7 @@ void Sprite::SetClip(int x, int y, int w, int h) {
  * Renders this sprite on the main renderer
  * */
 void Sprite::Render() {
-    this->Render(associated.box.x, associated.box.y);
+    this->Render(associated.box.x - Camera::pos.x, associated.box.y - Camera::pos.y);
 }
 
 /**

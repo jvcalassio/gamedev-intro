@@ -25,6 +25,14 @@ Vec2 Vec2::operator+ (const Vec2& point) {
 }
 
 /**
+ * Sum and attribution between vectors
+ * */
+void Vec2::operator+= (const Vec2& point) {
+    x += point.x;
+    y += point.y;
+}
+
+/**
  * Subtraction between vectors
  * */
 Vec2 Vec2::operator- (const Vec2& point) {
@@ -32,6 +40,14 @@ Vec2 Vec2::operator- (const Vec2& point) {
         x - point.x,
         y - point.y
     );
+}
+
+/**
+ * Subtraction and attribution between vectors
+ * */
+void Vec2::operator-= (const Vec2& point) {
+    x -= point.x;
+    y -= point.y;
 }
 
 /**

@@ -39,6 +39,34 @@ Rect operator+ (const Vec2& point, const Rect& rec) {
 }
 
 /**
+ * Subtracts {point} positions to Rect
+ * */
+Rect operator- (const Rect& rec, const Vec2& point) {
+    return Rect(
+        rec.x - point.x,
+        rec.y - point.y,
+        rec.w,
+        rec.h
+    );
+}
+
+/**
+ * Adds {point} positions to this Rect
+ * */
+void Rect::operator+= (const Vec2& point) {
+    x += point.x;
+    y += point.y;
+}
+
+/**
+ * Subtracts {point} positions to this Rect
+ * */
+void Rect::operator-= (const Vec2& point) {
+    x -= point.x;
+    y -= point.y;
+}
+
+/**
  * Returns the center point of this rectangle
  * */
 Vec2 Rect::center() const {

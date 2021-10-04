@@ -7,6 +7,7 @@
 #include "../include/SDL_include.h"
 #include "../include/Game.hpp"
 #include "../include/Resources.hpp"
+#include "../include/InputManager.hpp"
 
 Game* Game::instance = nullptr;
 
@@ -64,6 +65,9 @@ Game::Game(std::string title, int width, int height) {
     }
 
     srand(time(NULL));
+
+    frameStart = 0;
+    this->CalculateDeltaTime();
 }
 
 /**
@@ -85,16 +89,33 @@ SDL_Renderer* Game::GetRenderer() {
     return renderer;
 }
 
+float Game::GetDeltaTime() {
+    return dt;
+}
+
+/**
+ * Delta time = time between frames
+ * */
+void Game::CalculateDeltaTime() {
+    int curr = SDL_GetTicks();
+    dt = ( (float) (curr - frameStart) / 1000.0 );
+    frameStart = curr;
+}
+
 /**
  * Main Game Loop
  * */
 void Game::Run() {
+    InputManager& inp = InputManager::GetInstance();
+
     while(!state->QuitRequested()) {
-        state->Update(1); // 1?
+        this->CalculateDeltaTime();
+        inp.Update();
+        state->Update(dt);
         state->Render();
         SDL_RenderPresent(renderer);
         
-        SDL_Delay(33);
+        SDL_Delay(16);
     }
 
     // unloads resources
