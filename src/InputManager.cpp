@@ -11,7 +11,7 @@ InputManager::InputManager() {
         mouseUpdate[i] = 0;
     }
     quitRequested = false;
-    updateCounter = INT_MAX - 5;
+    updateCounter = 0;
     mouseX = 0;
     mouseY = 0;
 }
