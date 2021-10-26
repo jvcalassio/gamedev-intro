@@ -7,6 +7,8 @@ TileMap::TileMap(std::string file, TileSet* tileSet, GameObject&  associated) : 
     this->Load(file);
 }
 
+void TileMap::Start() {}
+
 /**
  * Loads tilemap specified file and saves it into tilematrix
  * Files must define width, height and depth in first 3 items

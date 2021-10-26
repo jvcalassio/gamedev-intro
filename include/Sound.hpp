@@ -21,6 +21,7 @@ class Sound : public Component {
         Sound(GameObject& associated);
         Sound(std::string file, GameObject& associated);
         ~Sound();
+        void Start();
         void Play(int times = 1);
         void Stop();
         void Open(std::string file);

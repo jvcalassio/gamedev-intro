@@ -21,9 +21,12 @@ class GameObject {
 
     public:
         Rect box;
+        bool started;
+        double angleDeg;
 
         GameObject();
         ~GameObject();
+        void Start();
         void Update(float dt);
         void Render();
         bool IsDead();

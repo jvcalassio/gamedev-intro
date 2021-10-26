@@ -22,6 +22,7 @@ class Rect {
         void operator+= (const Vec2& rec);
         void operator-= (const Vec2& rec);
         Vec2 center() const;
+        void set_center(const Vec2& point);
         float distance_to(const Rect& to);
         bool contains(const Vec2& point);
 };

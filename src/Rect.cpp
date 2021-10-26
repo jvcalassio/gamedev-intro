@@ -77,6 +77,14 @@ Vec2 Rect::center() const {
 }
 
 /**
+ * Sets the center point of this rectangle
+ * */
+void Rect::set_center(const Vec2& point) {
+    x = point.x - (w/2);
+    y = point.y - (h/2);
+}
+
+/**
  * Distance between the center of this and {to} rectangle
  * */
 float Rect::distance_to(const Rect& to) {

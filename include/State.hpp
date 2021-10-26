@@ -15,13 +15,15 @@ class State {
         //Sprite* bg;
         Music* music;
         bool quitRequested;
-        std::vector<std::unique_ptr<GameObject>> objectArray;
-
-        void AddObject(int mouseX, int mouseY);
+        bool started;
+        std::vector<std::shared_ptr<GameObject>> objectArray;
 
     public:
         State();
         ~State();
+        void Start();
+        std::weak_ptr<GameObject> AddObject(GameObject* go);
+        std::weak_ptr<GameObject> GetObjectPtr(GameObject* go);
         bool QuitRequested();
         void LoadAssets();
         void Update(float dt);

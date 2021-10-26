@@ -107,6 +107,7 @@ void Game::CalculateDeltaTime() {
  * */
 void Game::Run() {
     InputManager& inp = InputManager::GetInstance();
+    state->Start();
 
     while(!state->QuitRequested()) {
         this->CalculateDeltaTime();

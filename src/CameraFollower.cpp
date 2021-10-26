@@ -8,6 +8,8 @@ void CameraFollower::Update(float dt) {
     associated.box.y = Camera::pos.y;
 }
 
+void CameraFollower::Start() {}
+
 void CameraFollower::Render() {}
 
 bool CameraFollower::Is(std::string type) {

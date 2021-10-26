@@ -1,32 +1,40 @@
 #include <string>
 #include "../include/State.hpp"
-#include "../include/Face.hpp"
 #include "../include/Sound.hpp"
 #include "../include/TileMap.hpp"
 #include "../include/InputManager.hpp"
 #include "../include/Camera.hpp"
 #include "../include/CameraFollower.hpp"
+#include "../include/Alien.hpp"
 
 /**
- * Starts the background image object
- * and loads the background music
+ * Starts the background image object, tilemap,
+ * first alien and loads the background music
  * */
 State::State() {
     quitRequested = false;
+    started = false;
+
     GameObject* bgobj = new GameObject();
     bgobj->AddComponent(new Sprite("./assets/img/ocean.jpg", *bgobj));
     bgobj->AddComponent(new CameraFollower(*bgobj)); // makes bg static
-    objectArray.emplace_back(bgobj);
+    this->AddObject(bgobj);
 
     GameObject* tm = new GameObject();
     TileSet* ts = new TileSet(64, 64, "./assets/img/tileset.png");
     tm->AddComponent(new TileMap("./assets/map/tileMap.txt", ts, *tm));
     tm->box.x = 0;
     tm->box.y = 0;
-    objectArray.emplace_back(tm);
+    this->AddObject(tm);
+
+    GameObject* alien = new GameObject();
+    alien->AddComponent(new Alien(*alien, 6));
+    alien->box.set_center(Vec2(512,300));
+    //Camera::Follow(alien);
+    this->AddObject(alien);
 
     music = new Music("./assets/audio/stageState.ogg");
-    music->Play();
+    //music->Play();
 }
 
 /**
@@ -37,27 +45,44 @@ State::~State() {
 }
 
 /**
- * Add objects to this state at the {mouseX, mouseY} position
+ * Starts state's objects
  * */
-void State::AddObject(int mouseX, int mouseY) {
-    GameObject* enemy = new GameObject();
+void State::Start() {
+    this->LoadAssets();
 
-    Sprite* es = new Sprite("./assets/img/penguinface.png", *enemy);
-    // mouseX,Y represents the box center
-    enemy->box.x = mouseX - (enemy->box.w / 2);
-    enemy->box.y = mouseY - (enemy->box.h / 2);
+    for(auto& obj : objectArray) {
+        obj->Start();
+    }
 
-    enemy->box += Camera::pos;
+    started = true;
+}
 
-    Sound* sn = new Sound("./assets/audio/boom.wav", *enemy);
+/**
+ * Adds objects to objArray
+ * and starts them if the state is already started
+ * */
+std::weak_ptr<GameObject> State::AddObject(GameObject* obj) {
+    std::shared_ptr<GameObject> sp(obj);
+    objectArray.push_back(sp);
 
-    Face* fc = new Face(*enemy);
+    if(started) sp->Start();
 
-    enemy->AddComponent(es);
-    enemy->AddComponent(sn);
-    enemy->AddComponent(fc);
+    std::weak_ptr<GameObject> wp = sp;
+    return wp;
+}
 
-    objectArray.emplace_back(enemy);
+/**
+ * Returns weak_ptr for providaded default pointer
+ * */
+std::weak_ptr<GameObject> State::GetObjectPtr(GameObject* obj) {
+    std::weak_ptr<GameObject> wp;
+    for(auto& i : objectArray) {
+        if(obj == i.get()) {
+            wp = i;
+            return wp;
+        }
+    }
+    return wp;
 }
 
 void State::LoadAssets() {
@@ -66,19 +91,14 @@ void State::LoadAssets() {
 
 /**
  * Updates the state
- * Checks if there's any dead entity
+ * Checks if there's any dead entity, and input events
+ * 
  * Runs at every gameloop iteration
  * */
 void State::Update(float dt) {
     InputManager& inp = InputManager::GetInstance();
     quitRequested = inp.QuitRequested() || inp.IsKeyDown(ESCAPE_KEY);
     Camera::Update(dt);
-
-    // new penguin
-    if(inp.KeyPress(SPACE_KEY)) {
-        Vec2 objPos = Vec2(200, 0).rotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(inp.GetMouseX(), inp.GetMouseY());
-        AddObject((int)objPos.x, (int)objPos.y);
-    }
 
     for(unsigned int i=0;i<objectArray.size();i++) {
         objectArray[i]->Update(dt);
@@ -93,6 +113,8 @@ void State::Update(float dt) {
 
 /**
  * Renders the current gameobjects
+ * 
+ * Layers 2+ of the tilemap are rendered above other objects
  * */
 void State::Render() {
     TileMap* tm = nullptr;

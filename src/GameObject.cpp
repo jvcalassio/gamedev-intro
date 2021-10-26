@@ -2,10 +2,22 @@
 
 GameObject::GameObject() : box(Rect()) {
     isDead = false;
+    started = false;
+    angleDeg = 0;
 }
 
 GameObject::~GameObject() {
     components.clear();
+}
+
+/**
+ * Starts all this object's components
+ * */
+void GameObject::Start() {
+    for(auto&c : components) {
+        c->Start();
+    }
+    started = true;
 }
 
 /**
@@ -40,6 +52,7 @@ void GameObject::RequestDelete() {
 
 void GameObject::AddComponent(Component* cpt) {
     components.emplace_back(cpt);
+    if(started) cpt->Start();
 }
 
 void GameObject::RemoveComponent(Component* cpt) {

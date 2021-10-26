@@ -13,8 +13,10 @@ void Camera::Unfollow() {
     focus = nullptr;
 }
 
-// currently only works when controlled by keyboard arrows
-// focus available on T5
+/**
+ * Follows target
+ * Otherwise, can be moved by keyboard arrows
+ * */
 void Camera::Update(float dt) {
     if(focus == nullptr) {
         InputManager& inp = InputManager::GetInstance();
