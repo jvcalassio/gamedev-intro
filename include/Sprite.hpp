@@ -5,6 +5,7 @@
 #include "SDL_include.h"
 #include "Component.hpp"
 #include "Vec2.hpp"
+#include "Timer.hpp"
 
 /**
  * Sprite 
@@ -21,9 +22,19 @@ class Sprite : public Component {
         SDL_Rect clipRect;
         Vec2 scale;
 
+        int frameCount;
+        int currentFrame;
+        float timeElapsed;
+        float frameTime;
+
+        Timer selfDestructCount;
+        float secondsToSelfDestruct;
+
     public:
-        Sprite(GameObject& associated);
-        explicit Sprite(std::string file, GameObject& associated);
+        Sprite(GameObject& associated, int frameCount = 1, 
+                float frameTime = 1.0f, float secondsToSelfDestruct = 0.0f);
+        explicit Sprite(GameObject& associated, std::string file, int frameCount = 1, 
+                float frameTime = 1.0f, float secondsToSelfDestruct = 0.0f);
         ~Sprite();
         void Start();
         void Open(std::string file);
@@ -37,6 +48,9 @@ class Sprite : public Component {
         bool Is(std::string type);
         void SetScaleX(float scaleX, float scaleY);
         Vec2 GetScale();
+        void SetFrame(int frame);
+        void SetFrameCount(int frameCount);
+        void SetFrameTime(float frameTime);
 };
 
 #endif

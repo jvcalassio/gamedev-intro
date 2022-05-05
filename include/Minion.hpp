@@ -1,8 +1,8 @@
 #ifndef __MINION__
 #define __MINION__
-#define DEFAULT_BULLET_SPEED 400
-#define DEFAULT_BULLET_DAMAGE 50
-#define DEFAULT_BULLET_DISTANCE 2000
+#define MINION_BULLET_SPEED 400
+#define MINION_BULLET_DAMAGE 50
+#define MINION_BULLET_DISTANCE 300
 #define MINION_DISTANCE 160
 #define MINION_SPEED 0.25
 #include <string>
@@ -20,6 +20,8 @@ class Minion : public Component {
     private:
         std::weak_ptr<GameObject> alienCenter;
         float arc;
+
+        void Kill();
 
     public:
         Minion(GameObject& associated, std::weak_ptr<GameObject> alienCenter, float arcOffsetDeg);

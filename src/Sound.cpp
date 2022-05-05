@@ -1,11 +1,13 @@
 #include "../include/Sound.hpp"
 #include "../include/Resources.hpp"
 
-Sound::Sound(GameObject& associated) : Component(associated) {
+Sound::Sound(GameObject& associated) : 
+    Component(associated) {
     chunk = nullptr;
 }
 
-Sound::Sound(std::string file, GameObject& associated) : Sound(associated) {
+Sound::Sound(GameObject& associated, std::string file) : 
+    Sound(associated) {
     Open(file);
 }
 

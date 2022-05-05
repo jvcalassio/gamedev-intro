@@ -2,7 +2,8 @@
 #include "../include/TileMap.hpp"
 #include "../include/Camera.hpp"
 
-TileMap::TileMap(std::string file, TileSet* tileSet, GameObject&  associated) : Component(associated) {
+TileMap::TileMap(GameObject&  associated, std::string file, TileSet* tileSet) : 
+    Component(associated) {
     this->tileSet = tileSet;
     this->Load(file);
 }

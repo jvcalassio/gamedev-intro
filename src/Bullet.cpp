@@ -1,18 +1,21 @@
 #include "../include/Bullet.hpp"
 #include "../include/Sprite.hpp"
+#include "../include/Collider.hpp"
 
-Bullet::Bullet(GameObject& associated, float angle, float speed,
-                int damage, float maxDistance, std::string sprite) : Component(associated) {
-    Sprite* sp = new Sprite(sprite, associated);
+Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, 
+            float maxDistance, std::string sprite, int frameCount, float frameTime, bool targetsPlayer) : 
+    Component(associated) {
+    Sprite* sp = new Sprite(associated, sprite, frameCount, frameTime);
+    Collider* cl = new Collider(associated);
     associated.angleDeg = angle * (180/M_PI);
     associated.AddComponent(sp);
+    associated.AddComponent(cl);
 
     distanceLeft = maxDistance;
     this->speed = Vec2(1, 0).rotated(angle) * speed;
     this->damage = damage;
+    this->targetsPlayer = targetsPlayer;
 }
-
-void Bullet::Start() {}
 
 /**
  * Moves bullet with constant speed
@@ -35,4 +38,20 @@ bool Bullet::Is(std::string type) {
 
 int Bullet::GetDamage() {
     return damage;
+}
+
+/**
+ * Handles any collision
+ * 
+ * @param other The collided GameObject 
+ */
+void Bullet::NotifyCollision(GameObject& other) {
+    bool penguin = other.GetComponent("PenguinBody") || other.GetComponent("PenguinCannon");
+    if(other.GetComponent("Alien") && !targetsPlayer) {
+        distanceLeft = 0;
+        associated.RequestDelete();
+    } else if(penguin && targetsPlayer) {
+        distanceLeft = 0;
+        associated.RequestDelete();
+    }
 }

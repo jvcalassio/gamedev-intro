@@ -16,13 +16,15 @@ class Bullet : public Component {
         int damage;
 
     public:
-        Bullet(GameObject& associated, float angle, float speed,
-                int damage, float maxDistance, std::string sprite);
-        void Start();
+        bool targetsPlayer;
+        
+        Bullet(GameObject& associated, float angle, float speed, int damage, 
+            float maxDistance, std::string sprite, int frameCount, float frameTime, bool targetsPlayer);
         void Update(float dt);
         void Render();
         bool Is(std::string type);
         int GetDamage();
+        void NotifyCollision(GameObject& other);
 };
 
 #endif

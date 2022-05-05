@@ -1,17 +1,27 @@
 #define INCLUDE_SDL_IMAGE
+#include <iostream>
 #include "../include/Sprite.hpp"
 #include "../include/Game.hpp"
 #include "../include/Resources.hpp"
 #include "../include/Camera.hpp"
-#include <iostream>
 
-Sprite::Sprite(GameObject& associated) : Component(associated) {
+Sprite::Sprite(GameObject& associated, int frameCount, float frameTime, 
+                float secondsToSelfDestruct) : 
+    Component(associated) {
     texture = nullptr;
     scale = Vec2(1,1);
+    currentFrame = 0;
+    timeElapsed = 0;
+    this->frameCount = frameCount;
+    this->frameTime = frameTime;
+    this->selfDestructCount = Timer();
+    this->secondsToSelfDestruct = secondsToSelfDestruct;
 }
 
-Sprite::Sprite(std::string file, GameObject& associated) : Sprite(associated) {
-    Open(file);
+Sprite::Sprite(GameObject& associated, std::string file, int frameCount, 
+                float frameTime, float secondsToSelfDestruct) : 
+    Sprite(associated, frameCount, frameTime, secondsToSelfDestruct) {
+    this->Open(file);
 }
 
 Sprite::~Sprite() {}
@@ -27,17 +37,17 @@ void Sprite::Open(std::string file) {
 
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
 
-    SetClip(0, 0, width, height);
+    this->SetClip(0, 0, this->GetWidth(), this->GetHeight());
 
-    associated.box.w = width * scale.x;
-    associated.box.h = height * scale.y;
+    associated.box.w = this->GetWidth();
+    associated.box.h = this->GetHeight();
 }
 
 void Sprite::SetClip(int x, int y, int w, int h) {
-    clipRect.x = x;
-    clipRect.y = y;
-    clipRect.w = w;
-    clipRect.h = h;
+    clipRect.x = x / this->GetScale().x;
+    clipRect.y = y / this->GetScale().y;
+    clipRect.w = w / this->GetScale().x;
+    clipRect.h = h / this->GetScale().y;
 }
 
 /**
@@ -60,14 +70,14 @@ void Sprite::Render(float x,  float y) {
     dst.h = clipRect.h * scale.y;
 
     Game& game = Game::GetInstance();
-    if(IsOpen()) {
+    if(this->IsOpen()) {
         SDL_RenderCopyEx(game.GetRenderer(), texture, &clipRect, &dst, 
                          associated.angleDeg, nullptr, SDL_FLIP_NONE);
     }
 }
 
 int Sprite::GetWidth() {
-    return width * scale.x;
+    return (width / frameCount) * scale.x;
 }
 
 int Sprite::GetHeight() {
@@ -78,7 +88,23 @@ bool Sprite::IsOpen() {
     return (texture != nullptr);
 }
 
-void Sprite::Update(float dt) {}
+void Sprite::Update(float dt) {
+    if(frameCount > 1) {
+        timeElapsed += dt;
+        if(timeElapsed >= frameTime) {
+            this->SetFrame(currentFrame + 1);
+            timeElapsed = 0;
+        }
+    }
+
+    if(secondsToSelfDestruct > 0) {
+        selfDestructCount.Update(dt);
+
+        if(selfDestructCount.Get() >= secondsToSelfDestruct) {
+            associated.RequestDelete();
+        }
+    }
+}
 
 bool Sprite::Is(std::string type) {
     return type == "Sprite";
@@ -86,10 +112,26 @@ bool Sprite::Is(std::string type) {
 
 void Sprite::SetScaleX(float scaleX, float scaleY) {
     scale = Vec2(scaleX, scaleY);
-    associated.box.w = width * scaleX;
-    associated.box.h = height * scaleY;
+    associated.box.w = this->GetWidth();
+    associated.box.h = this->GetHeight();
 }
 
 Vec2 Sprite::GetScale() {
     return scale;
+}
+
+void Sprite::SetFrame(int frame) {
+    currentFrame = (frame >= frameCount) ? 0 : frame;
+    
+    this->SetClip(this->GetWidth() * currentFrame, 0, this->GetWidth(), this->GetHeight());
+}
+
+void Sprite::SetFrameCount(int frameCount) {
+    currentFrame = 0;
+    this->frameCount = frameCount;
+    this->SetScaleX(this->GetScale().x, this->GetScale().y);
+}
+
+void Sprite::SetFrameTime(float frameTime) {
+    this->frameTime = frameTime;
 }

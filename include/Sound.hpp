@@ -19,7 +19,7 @@ class Sound : public Component {
     
     public:
         Sound(GameObject& associated);
-        Sound(std::string file, GameObject& associated);
+        Sound(GameObject& associated, std::string file);
         ~Sound();
         void Start();
         void Play(int times = 1);
