@@ -52,7 +52,7 @@ bool PenguinCannon::Is(std::string type) {
 
 void PenguinCannon::Shoot() {
     Game& gm = Game::GetInstance();
-    State& st = gm.GetState();
+    State& st = gm.GetCurrentState();
     
     GameObject* go = new GameObject();
 

@@ -55,7 +55,7 @@ bool Minion::Is(std::string type) {
  * */
 void Minion::Shoot(Vec2 pos) {
     Game& gm = Game::GetInstance();
-    State& st = gm.GetState();
+    State& st = gm.GetCurrentState();
 
     GameObject* go = new GameObject();
     Vec2 curr_pos = associated.box.center();
@@ -74,7 +74,7 @@ void Minion::Shoot(Vec2 pos) {
  */
 void Minion::Kill() {
     Game& gm = Game::GetInstance();
-    State& st = gm.GetState();
+    State& st = gm.GetCurrentState();
 
     GameObject* explosion = new GameObject();
 

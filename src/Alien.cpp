@@ -37,7 +37,7 @@ Alien::~Alien() {
  * */
 void Alien::Start() {
     Game& gm = Game::GetInstance();
-    State& st = gm.GetState();
+    State& st = gm.GetCurrentState();
 
     for(int i=1;i<=nMinions;i++) {
         GameObject* go = new GameObject();
@@ -134,7 +134,7 @@ void Alien::NotifyCollision(GameObject& other) {
  */
 void Alien::Kill() {
     Game& gm = Game::GetInstance();
-    State& st = gm.GetState();
+    State& st = gm.GetCurrentState();
 
     GameObject* explosion = new GameObject();
     Sound* sound = new Sound(*explosion, "assets/audio/boom.wav");

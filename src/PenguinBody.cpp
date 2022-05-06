@@ -32,7 +32,7 @@ PenguinBody::~PenguinBody() {
 
 void PenguinBody::Start() {
     Game& gm = Game::GetInstance();
-    State& st = gm.GetState();
+    State& st = gm.GetCurrentState();
 
     // adds cannon
     GameObject* go = new GameObject();
@@ -117,7 +117,7 @@ Vec2 PenguinBody::GetPosition() {
 
 void PenguinBody::Kill() {
     Game& gm = Game::GetInstance();
-    State& st = gm.GetState();
+    State& st = gm.GetCurrentState();
 
     Camera::Unfollow();
 
