@@ -1,5 +1,6 @@
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
+#define INCLUDE_SDL_TTF
 #include <string>
 #include <iostream>
 #include <cstdlib>
@@ -47,6 +48,11 @@ Game::Game(std::string title, int width, int height) {
         exit(0);
     }
 
+    if(TTF_Init() != 0) {
+        std::cout << "ih deu erro ao inicial o sdl ttf: " << SDL_GetError() << std::endl;
+        exit(0);
+    }
+
     Mix_Init(MIX_INIT_OGG);
     if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0) {
         std::cout << "ih deu erro ao iniciar o sdl mixer: " << SDL_GetError() << std::endl;
@@ -90,6 +96,7 @@ Game::~Game() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     Mix_CloseAudio();
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
@@ -131,17 +138,21 @@ void Game::Run() {
 
     while(!stateStack.empty()) {
         if(stateStack.top().get()->QuitRequested()) {
+            break;
+        }
+
+        if(stateStack.top().get()->PopRequested()) {
             stateStack.pop();
 
             if(!stateStack.empty()) {
                 stateStack.top().get()->Resume();
-            } else {
-                break;
             }
         }
 
         if(storedState != nullptr) {
-            stateStack.top().get()->Pause();
+            if(!stateStack.empty()) {
+                stateStack.top().get()->Pause();
+            }
             stateStack.push(std::unique_ptr<State>(storedState));
             stateStack.top().get()->Start();
             storedState = nullptr;
@@ -149,11 +160,18 @@ void Game::Run() {
 
         this->CalculateDeltaTime();
         inp.Update();
-        this->GetCurrentState().Update(dt);
-        this->GetCurrentState().Render();
+        
+        if(!stateStack.empty()) {
+            this->GetCurrentState().Update(dt);
+            this->GetCurrentState().Render();
+        }
         SDL_RenderPresent(renderer);
         
         SDL_Delay(16);
+    }
+
+    while(!stateStack.empty()) {
+        stateStack.pop();
     }
 
     // unloads resources

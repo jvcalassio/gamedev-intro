@@ -3,15 +3,16 @@
 #include "../include/Game.hpp"
 
 // makes sure that the static props are initialized
-std::unordered_map<std::string, SDL_Texture*> Resources::imageTable;
+std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> Resources::imageTable;
 std::unordered_map<std::string, Mix_Music*> Resources::musicTable;
 std::unordered_map<std::string, Mix_Chunk*> Resources::soundTable;
+std::unordered_map<std::string, TTF_Font*> Resources::fontTable;
 
 /**
  * Loads image from {file} if it isn't loaded yet
  * Otherwise, returns pointer to the existing texture corresponding to {file}
  * */
-SDL_Texture* Resources::GetImage(std::string file) {
+std::shared_ptr<SDL_Texture> Resources::GetImage(std::string file) {
     auto res = Resources::imageTable.find(file);
     if(res != Resources::imageTable.end()) {
         return res->second;
@@ -25,15 +26,26 @@ SDL_Texture* Resources::GetImage(std::string file) {
         return nullptr;
     }
 
-    Resources::imageTable.emplace(file, texture);
-    return texture;
+    std::shared_ptr<SDL_Texture> sp(texture, [](SDL_Texture* t){
+        SDL_DestroyTexture(t);
+    });
+    Resources::imageTable.emplace(file, sp);
+    return sp;
 }
 
 void Resources::ClearImages() {
     for(auto& i : Resources::imageTable) {
-        SDL_DestroyTexture(i.second);
+        if(i.second.unique()) {
+            imageTable.erase(i.first);
+        }
     }
-    Resources::imageTable.clear();
+    // handle SIGTRAP nostop noprint noignore
+    // for(auto it = Resources::imageTable.begin(); it != Resources::imageTable.end(); it++) {
+    //     if(it->second.unique()) {
+    //         //SDL_DestroyTexture(it->second.get());
+    //         Resources::imageTable.erase(it->first);
+    //     }
+    // }
 }
 
 /**
@@ -90,4 +102,30 @@ void Resources::ClearSounds() {
         Mix_FreeChunk(i.second);
     }
     Resources::soundTable.clear();
+}
+
+TTF_Font* Resources::GetFont(std::string file, int size) {
+    std::string strfile = file + std::to_string(size);
+
+    auto res = Resources::fontTable.find(strfile);
+    if(res != Resources::fontTable.end()) {
+        return res->second;
+    }
+
+    TTF_Font* font = TTF_OpenFont(file.c_str(), size);
+
+    if(font == nullptr) {
+        std::cout << "ih deu erro no open font: " << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+
+    Resources::fontTable.emplace(strfile, font);
+    return font;
+}
+
+void Resources::ClearFonts() {
+    for(auto& i : Resources::fontTable) {
+        TTF_CloseFont(i.second);
+    }
+    Resources::fontTable.clear();
 }

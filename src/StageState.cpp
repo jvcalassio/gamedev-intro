@@ -9,6 +9,9 @@
 #include "../include/PenguinBody.hpp"
 #include "../include/Collider.hpp"
 #include "../include/Collision.hpp"
+#include "../include/GameData.hpp"
+#include "../include/EndState.hpp"
+#include "../include/Game.hpp"
 #include <iostream>
 
 /**
@@ -16,6 +19,27 @@
  * first alien and loads the background music
  * */
 StageState::StageState() : State() {
+    backgroundMusic = nullptr;
+    tileSet = nullptr;
+}
+
+/**
+ * Clears the current objects
+ * */
+StageState::~StageState() {}
+
+/**
+ * Starts state's objects
+ * */
+void StageState::Start() {
+    this->LoadAssets();
+
+    this->StartArray();
+
+    started = true;
+}
+
+void StageState::LoadAssets() {
     // adds background to the game screen
     GameObject* bgobj = new GameObject();
     bgobj->AddComponent(new Sprite(*bgobj, "./assets/img/ocean.jpg"));
@@ -30,11 +54,21 @@ StageState::StageState() : State() {
     tm->box.y = 0;
     this->AddObject(tm);
 
-    // adds the first alien to the game (temporary)
+    // adds the aliens
     GameObject* alien = new GameObject();
     alien->AddComponent(new Alien(*alien, 6));
-    alien->box.set_center(Vec2(512,300));
+    alien->box.set_center(Vec2(300,300));
     this->AddObject(alien);
+
+    GameObject* alien2 = new GameObject();
+    alien2->AddComponent(new Alien(*alien2, 6));
+    alien2->box.set_center(Vec2(400,1000));
+    this->AddObject(alien2);
+
+    GameObject* alien3 = new GameObject();
+    alien3->AddComponent(new Alien(*alien3, 6));
+    alien3->box.set_center(Vec2(1100,600));
+    this->AddObject(alien3);
 
     // adds the penguin to the game screen
     GameObject* penguin = new GameObject();
@@ -48,26 +82,6 @@ StageState::StageState() : State() {
 }
 
 /**
- * Clears the current objects
- * */
-StageState::~StageState() {
-    
-}
-
-/**
- * Starts state's objects
- * */
-void StageState::Start() {
-    this->LoadAssets();
-
-    this->StartArray();
-
-    started = true;
-}
-
-void StageState::LoadAssets() {}
-
-/**
  * Updates the state
  * Checks if there's any dead entity, and input events
  * 
@@ -75,10 +89,26 @@ void StageState::LoadAssets() {}
  * */
 void StageState::Update(float dt) {
     InputManager& inp = InputManager::GetInstance();
-    quitRequested = inp.QuitRequested() || inp.IsKeyDown(ESCAPE_KEY);
+    popRequested = inp.KeyPress(ESCAPE_KEY);
+    quitRequested = inp.QuitRequested();
     Camera::Update(dt);
 
     this->UpdateArray(dt);
+
+    if(Alien::alienCount == 0) {
+        GameData::playerVictory = true;
+        popRequested = true;
+        EndState* end = new EndState();
+        Game& gm = Game::GetInstance();
+        gm.Push(end);
+    }
+
+    if(PenguinBody::player == nullptr) {
+        popRequested = true;
+        EndState* end = new EndState();
+        Game& gm = Game::GetInstance();
+        gm.Push(end);
+    }
 
     for(size_t i=0, size=objectArray.size();i<size;i++) {
         Collider* collider = (Collider*) objectArray[i]->GetComponent("Collider");
@@ -137,10 +167,6 @@ void StageState::Render() {
             tm->RenderLayer(i-1, Camera::pos.x * i, Camera::pos.y * i);
         }
     }
-}
-
-bool StageState::QuitRequested() {
-    return quitRequested;
 }
 
 void StageState::Pause() {}

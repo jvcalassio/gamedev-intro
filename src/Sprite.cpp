@@ -35,7 +35,7 @@ void Sprite::Start() {}
 void Sprite::Open(std::string file) {
     texture = Resources::GetImage(file);
 
-    SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+    SDL_QueryTexture(texture.get(), nullptr, nullptr, &width, &height);
 
     this->SetClip(0, 0, this->GetWidth(), this->GetHeight());
 
@@ -71,7 +71,7 @@ void Sprite::Render(float x,  float y) {
 
     Game& game = Game::GetInstance();
     if(this->IsOpen()) {
-        SDL_RenderCopyEx(game.GetRenderer(), texture, &clipRect, &dst, 
+        SDL_RenderCopyEx(game.GetRenderer(), texture.get(), &clipRect, &dst, 
                          associated.angleDeg, nullptr, SDL_FLIP_NONE);
     }
 }

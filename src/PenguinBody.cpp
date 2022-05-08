@@ -82,8 +82,12 @@ void PenguinBody::Update(float dt) {
 
     speed = Vec2(linearSpeed, 0);
 
-    associated.box += speed.rotated(angle) * dt;
-    associated.angleDeg = angle * (180/M_PI);
+    int newx = associated.box.x + (speed.rotated(angle) * dt).x;
+    int newy = associated.box.y + (speed.rotated(angle) * dt).y;
+    if((0 < newx && newx < 1408) && (0 < newy && newy < 1280)) {
+        associated.box += speed.rotated(angle) * dt;
+        associated.angleDeg = angle * (180/M_PI);
+    }
 
     if(hp <= 0) {
         this->Kill();
