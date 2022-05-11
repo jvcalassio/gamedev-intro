@@ -1,6 +1,6 @@
 #ifndef __ALIEN__
 #define __ALIEN__
-#define ALIEN_HP 300
+#define ALIEN_HP 200
 #define ALIEN_SPIN 0.25
 #define ALIEN_SPEED 100
 #define ALIEN_REST_TIME 1.5

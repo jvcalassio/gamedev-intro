@@ -1,9 +1,9 @@
 #ifndef __PENGUIN_CANNON__
 #define __PENGUIN_CANNON__
 #define PENGUIN_BULLET_SPEED 700
-#define PENGUIN_BULLET_DAMAGE 20
+#define PENGUIN_BULLET_DAMAGE 30
 #define PENGUIN_BULLET_DISTANCE 2000
-#define PENGUIN_BULLET_COOLDOWN 1
+#define PENGUIN_BULLET_COOLDOWN 0.5
 #include <string>
 #include <memory>
 #include "Component.hpp"

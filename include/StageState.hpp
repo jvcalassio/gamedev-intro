@@ -1,10 +1,11 @@
 #ifndef __STAGE_STATE__
 #define __STAGE_STATE__
+#define ALIEN_COUNT 4
+#define ALIEN_MINION_COUNT 6
 #include <vector>
 #include <memory>
 #include "GameObject.hpp"
 #include "State.hpp"
-//#include "Sprite.hpp"
 #include "Music.hpp"
 #include "TileSet.hpp"
 

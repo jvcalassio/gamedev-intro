@@ -8,7 +8,6 @@
 #include "../include/Bullet.hpp"
 #include "../include/Sound.hpp"
 #include "../include/PenguinBody.hpp"
-#include <iostream>
 
 int Alien::alienCount = 0;
 

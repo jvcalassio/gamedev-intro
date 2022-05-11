@@ -9,7 +9,9 @@
 
 EndState::EndState() : State() {}
 
-EndState::~EndState() {}
+EndState::~EndState() {
+    backgroundMusic->Stop();
+}
 
 void EndState::LoadAssets() {
     GameObject* bg = new GameObject();
@@ -38,14 +40,15 @@ void EndState::Update(float dt) {
     InputManager& inp = InputManager::GetInstance();
     quitRequested = inp.QuitRequested() || inp.KeyPress(ESCAPE_KEY);
 
-    if(quitRequested) return;
-
     this->UpdateArray(dt);
 
-    if(inp.IsKeyDown(SPACE_KEY)) {
-        TitleState* title = new TitleState();
-        Game& gm = Game::GetInstance();
-        gm.Push(title);
+    if(inp.KeyPress(SPACE_KEY)) {
+        this->Pause();
+        popRequested = true;
+    }
+
+    if(popRequested || quitRequested) {
+        backgroundMusic->Stop();
     }
 }
 
@@ -55,13 +58,19 @@ void EndState::Render() {
 
 void EndState::Start() {
     this->LoadAssets();
+
     this->StartArray();
+
     started = true;
+    backgroundMusic->Play();
 }
 
-void EndState::Pause() {}
+void EndState::Pause() {
+    backgroundMusic->Stop();
+}
 
 void EndState::Resume() {
     Camera::Unfollow();
     Camera::Update(0);
+    backgroundMusic->Play();
 }

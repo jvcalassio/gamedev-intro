@@ -14,7 +14,7 @@
 #define LEFT_MOUSE_BUTTON SDL_BUTTON_LEFT
 #define RIGHT_MOUSE_BUTTON SDL_BUTTON_RIGHT
 #include <unordered_map>
-#include "../include/SDL_include.h"
+#include "SDL_include.hpp"
 
 /**
  * Input Singleton

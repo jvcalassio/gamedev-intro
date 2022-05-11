@@ -1,7 +1,8 @@
 #ifndef __SOUND__
 #define __SOUND__
 #define INCLUDE_SDL_MIXER
-#include "SDL_include.h"
+#include <memory>
+#include "SDL_include.hpp"
 #include "Component.hpp"
 
 /**
@@ -14,7 +15,7 @@
  * */
 class Sound : public Component {
     private:
-        Mix_Chunk* chunk;
+        std::shared_ptr<Mix_Chunk> chunk;
         int channel;
     
     public:

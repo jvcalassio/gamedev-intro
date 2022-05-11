@@ -7,7 +7,6 @@
 #include "../include/Bullet.hpp"
 #include "../include/Camera.hpp"
 #include "../include/Sound.hpp"
-#include <iostream>
 
 PenguinBody* PenguinBody::player = nullptr;
 
@@ -82,12 +81,21 @@ void PenguinBody::Update(float dt) {
 
     speed = Vec2(linearSpeed, 0);
 
-    int newx = associated.box.x + (speed.rotated(angle) * dt).x;
-    int newy = associated.box.y + (speed.rotated(angle) * dt).y;
-    if((0 < newx && newx < 1408) && (0 < newy && newy < 1280)) {
-        associated.box += speed.rotated(angle) * dt;
-        associated.angleDeg = angle * (180/M_PI);
+    Vec2 movement = speed.rotated(angle) * dt;
+
+    int new_x = associated.box.center().x + movement.x;
+    int new_y = associated.box.center().y + movement.y;
+
+    if(new_x >= 1408 || new_x <= 0) {
+        movement.x = 0;
     }
+
+    if(new_y >= 1280 || new_y <= 0) {
+        movement.y = 0;
+    }
+
+    associated.angleDeg = angle * (180/M_PI);
+    associated.box += movement;
 
     if(hp <= 0) {
         this->Kill();

@@ -8,7 +8,7 @@
 #include "Camera.hpp"
 #include "Game.hpp"
 #define INCLUDE_SDL
-#include "SDL_include.h"
+#include "SDL_include.hpp"
 #endif // DEBUG
 
 class Collider : public Component {

@@ -1,6 +1,6 @@
 #ifndef __PENGUIN_BODY__
 #define __PENGUIN_BODY__
-#define PENGUIN_HP 250
+#define PENGUIN_HP 100
 #define PENGUIN_MAX_SPEED 500
 #define PENGUIN_ACCELERATION 10
 #include <string>

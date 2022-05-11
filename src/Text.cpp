@@ -1,10 +1,10 @@
+#include <string>
+#include <iostream>
 #include "../include/Camera.hpp"
 #include "../include/Game.hpp"
 #include "../include/GameObject.hpp"
 #include "../include/Resources.hpp"
 #include "../include/Text.hpp"
-#include <string>
-#include <iostream>
 
 Text::Text(GameObject& associated, std::string fontFile, 
             int fontSize, TextStyle style, std::string text, 
@@ -35,13 +35,13 @@ void Text::RemakeTexture() {
     SDL_Surface* surface;
     switch(style) {
         case (Text::TextStyle::SOLID):
-            surface = TTF_RenderText_Solid(font, text.c_str(), color);
+            surface = TTF_RenderText_Solid(font.get(), text.c_str(), color);
             break;
         case (Text::TextStyle::SHADED):
-            surface = TTF_RenderText_Shaded(font, text.c_str(), color, {0, 0, 0, 0});
+            surface = TTF_RenderText_Shaded(font.get(), text.c_str(), color, {0, 0, 0, 0});
             break;
         case (Text::TextStyle::BLENDED):
-            surface = TTF_RenderText_Blended(font, text.c_str(), color);
+            surface = TTF_RenderText_Blended(font.get(), text.c_str(), color);
             break;
     }
 

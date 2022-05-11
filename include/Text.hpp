@@ -3,7 +3,7 @@
 #define INCLUDE_SDL
 #define INCLUDE_SDL_TTF
 #include <string>
-#include "SDL_include.h"
+#include "SDL_include.hpp"
 #include "Component.hpp"
 #include "Timer.hpp"
 #define BLINK_TIME 1
@@ -13,7 +13,7 @@ class Text : public Component {
         enum TextStyle { SOLID, SHADED, BLENDED }; 
 
     private:
-        TTF_Font* font;
+        std::shared_ptr<TTF_Font> font;
         SDL_Texture* texture;
 
         std::string fontFile;

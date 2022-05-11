@@ -12,7 +12,6 @@
 #include "../include/GameData.hpp"
 #include "../include/EndState.hpp"
 #include "../include/Game.hpp"
-#include <iostream>
 
 /**
  * Starts the background image object, tilemap,
@@ -26,7 +25,9 @@ StageState::StageState() : State() {
 /**
  * Clears the current objects
  * */
-StageState::~StageState() {}
+StageState::~StageState() {
+    backgroundMusic->Stop();
+}
 
 /**
  * Starts state's objects
@@ -37,6 +38,7 @@ void StageState::Start() {
     this->StartArray();
 
     started = true;
+    backgroundMusic->Play();
 }
 
 void StageState::LoadAssets() {
@@ -55,20 +57,12 @@ void StageState::LoadAssets() {
     this->AddObject(tm);
 
     // adds the aliens
-    GameObject* alien = new GameObject();
-    alien->AddComponent(new Alien(*alien, 6));
-    alien->box.set_center(Vec2(300,300));
-    this->AddObject(alien);
-
-    GameObject* alien2 = new GameObject();
-    alien2->AddComponent(new Alien(*alien2, 6));
-    alien2->box.set_center(Vec2(400,1000));
-    this->AddObject(alien2);
-
-    GameObject* alien3 = new GameObject();
-    alien3->AddComponent(new Alien(*alien3, 6));
-    alien3->box.set_center(Vec2(1100,600));
-    this->AddObject(alien3);
+    for(int i=0;i<ALIEN_COUNT;i++) {
+        GameObject* alien = new GameObject();
+        alien->AddComponent(new Alien(*alien, ALIEN_MINION_COUNT));
+        alien->box.set_center(Vec2(rand()%1390 + 4, rand()%1190+4));
+        this->AddObject(alien);
+    }
 
     // adds the penguin to the game screen
     GameObject* penguin = new GameObject();
@@ -78,7 +72,6 @@ void StageState::LoadAssets() {
     this->AddObject(penguin);
 
     backgroundMusic = new Music("./assets/audio/stageState.ogg");
-    //backgroundMusic->Play();
 }
 
 /**
@@ -95,12 +88,18 @@ void StageState::Update(float dt) {
 
     this->UpdateArray(dt);
 
+    if(popRequested || quitRequested) {
+        backgroundMusic->Stop();
+        return;
+    }
+
     if(Alien::alienCount == 0) {
         GameData::playerVictory = true;
         popRequested = true;
         EndState* end = new EndState();
         Game& gm = Game::GetInstance();
         gm.Push(end);
+        return;
     }
 
     if(PenguinBody::player == nullptr) {
@@ -108,6 +107,7 @@ void StageState::Update(float dt) {
         EndState* end = new EndState();
         Game& gm = Game::GetInstance();
         gm.Push(end);
+        return;
     }
 
     for(size_t i=0, size=objectArray.size();i<size;i++) {
@@ -118,8 +118,10 @@ void StageState::Update(float dt) {
             for(size_t j=i+1, sizej=objectArray.size();j<sizej;j++) {
                 Collider* colliderj = (Collider*) objectArray[j]->GetComponent("Collider");
                 if(objectArray[j].get() && colliderj != nullptr) {
-                    bool body = objectArray[i]->GetComponent("PenguinBody") || objectArray[j]->GetComponent("PenguinBody");
-                    bool cannon = objectArray[i]->GetComponent("PenguinCannon") || objectArray[j]->GetComponent("PenguinCannon");
+                    bool body = objectArray[i]->GetComponent("PenguinBody") || 
+                                objectArray[j]->GetComponent("PenguinBody");
+                    bool cannon = objectArray[i]->GetComponent("PenguinCannon") || 
+                                objectArray[j]->GetComponent("PenguinCannon");
                     if(!(body && cannon)) {
                         bool isColliding = Collision::IsColliding(
                             collider->box, 
@@ -169,5 +171,9 @@ void StageState::Render() {
     }
 }
 
-void StageState::Pause() {}
-void StageState::Resume() {}
+void StageState::Pause() {
+    backgroundMusic->Stop();
+}
+void StageState::Resume() {
+    backgroundMusic->Play();
+}

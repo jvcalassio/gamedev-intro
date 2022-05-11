@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "../include/SDL_include.h"
+#include "../include/SDL_include.hpp"
 #include "../include/Game.hpp"
 #include "../include/Resources.hpp"
 #include "../include/InputManager.hpp"
@@ -59,6 +59,8 @@ Game::Game(std::string title, int width, int height) {
         exit(0);
     }
     Mix_AllocateChannels(32);
+    Mix_VolumeMusic(20);
+    Mix_Volume(-1, 25);
 
     window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, 
                                 SDL_WINDOWPOS_CENTERED, width, height, 0);

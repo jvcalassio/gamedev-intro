@@ -32,7 +32,7 @@ void TitleState::Update(float dt) {
 
     this->UpdateArray(dt);
 
-    if(inp.IsKeyDown(SPACE_KEY)) {
+    if(inp.KeyPress(SPACE_KEY)) {
         StageState* stage = new StageState();
         Game& gm = Game::GetInstance();
         gm.Push(stage);

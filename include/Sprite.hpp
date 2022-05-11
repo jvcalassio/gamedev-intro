@@ -2,7 +2,7 @@
 #define __SPRITE__
 #define INCLUDE_SDL
 #include <string>
-#include "SDL_include.h"
+#include "SDL_include.hpp"
 #include "Component.hpp"
 #include "Vec2.hpp"
 #include "Timer.hpp"

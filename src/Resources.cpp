@@ -4,9 +4,9 @@
 
 // makes sure that the static props are initialized
 std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> Resources::imageTable;
-std::unordered_map<std::string, Mix_Music*> Resources::musicTable;
-std::unordered_map<std::string, Mix_Chunk*> Resources::soundTable;
-std::unordered_map<std::string, TTF_Font*> Resources::fontTable;
+std::unordered_map<std::string, std::shared_ptr<Mix_Music>> Resources::musicTable;
+std::unordered_map<std::string, std::shared_ptr<Mix_Chunk>> Resources::soundTable;
+std::unordered_map<std::string, std::shared_ptr<TTF_Font>> Resources::fontTable;
 
 /**
  * Loads image from {file} if it isn't loaded yet
@@ -39,20 +39,13 @@ void Resources::ClearImages() {
             imageTable.erase(i.first);
         }
     }
-    // handle SIGTRAP nostop noprint noignore
-    // for(auto it = Resources::imageTable.begin(); it != Resources::imageTable.end(); it++) {
-    //     if(it->second.unique()) {
-    //         //SDL_DestroyTexture(it->second.get());
-    //         Resources::imageTable.erase(it->first);
-    //     }
-    // }
 }
 
 /**
  * Loads music from {file} if it isn't loaded yet
  * Otherwise, returns pointer to the existing music corresponding to {file}
  * */
-Mix_Music* Resources::GetMusic(std::string file) {
+std::shared_ptr<Mix_Music> Resources::GetMusic(std::string file) {
     auto res = Resources::musicTable.find(file);
     if(res != Resources::musicTable.end()) {
         return res->second;
@@ -64,23 +57,26 @@ Mix_Music* Resources::GetMusic(std::string file) {
         std::cout << "ih deu erro no load music: " << SDL_GetError() << std::endl;
         return nullptr;
     }
-
-    Resources::musicTable.emplace(file, music);
-    return music;
+    std::shared_ptr<Mix_Music> sp(music, [](Mix_Music* t){
+        Mix_FreeMusic(t);
+    });
+    Resources::musicTable.emplace(file, sp);
+    return sp;
 }
 
 void Resources::ClearMusics() {
     for(auto& i : Resources::musicTable) {
-        Mix_FreeMusic(i.second);
+        if(i.second.unique()) {
+            musicTable.erase(i.first);
+        }
     }
-    Resources::musicTable.clear();
 }
 
 /**
  * Loads sound from {file} if it isn't loaded yet
  * Otherwise, returns pointer to the existing sound corresponding to {file}
  * */
-Mix_Chunk* Resources::GetSound(std::string file) {
+std::shared_ptr<Mix_Chunk> Resources::GetSound(std::string file) {
     auto res = Resources::soundTable.find(file);
     if(res != Resources::soundTable.end()) {
         return res->second;
@@ -93,18 +89,22 @@ Mix_Chunk* Resources::GetSound(std::string file) {
         return nullptr;
     }
 
-    Resources::soundTable.emplace(file, chunk);
-    return chunk;
+    std::shared_ptr<Mix_Chunk> sp(chunk, [](Mix_Chunk* t){
+        Mix_FreeChunk(t);
+    });
+    Resources::soundTable.emplace(file, sp);
+    return sp;
 }
 
 void Resources::ClearSounds() {
     for(auto& i : Resources::soundTable) {
-        Mix_FreeChunk(i.second);
+        if(i.second.unique()) {
+            soundTable.erase(i.first);
+        }
     }
-    Resources::soundTable.clear();
 }
 
-TTF_Font* Resources::GetFont(std::string file, int size) {
+std::shared_ptr<TTF_Font> Resources::GetFont(std::string file, int size) {
     std::string strfile = file + std::to_string(size);
 
     auto res = Resources::fontTable.find(strfile);
@@ -119,13 +119,17 @@ TTF_Font* Resources::GetFont(std::string file, int size) {
         return nullptr;
     }
 
-    Resources::fontTable.emplace(strfile, font);
-    return font;
+    std::shared_ptr<TTF_Font> sp(font, [](TTF_Font* t){
+        TTF_CloseFont(t);
+    });
+    Resources::fontTable.emplace(strfile, sp);
+    return sp;
 }
 
 void Resources::ClearFonts() {
     for(auto& i : Resources::fontTable) {
-        TTF_CloseFont(i.second);
+        if(i.second.unique()) {
+            fontTable.erase(i.first);
+        }
     }
-    Resources::fontTable.clear();
 }

@@ -3,7 +3,7 @@
 #define INCLUDE_SDL
 #include <string>
 #include <stack>
-#include "SDL_include.h"
+#include "SDL_include.hpp"
 #include "State.hpp"
 #include "StageState.hpp"
 
