@@ -34,7 +34,7 @@ class Alien : public Component {
     public:
         static int alienCount;
 
-        Alien(GameObject& associated, int nMinions);
+        Alien(GameObject& associated, int nMinions, int timeOffset = 0);
         ~Alien();
         void Start();
         void Update(float dt);

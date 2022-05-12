@@ -4,6 +4,9 @@
 #include <memory>
 #include "GameObject.hpp"
 
+/**
+ * Generic game screen state abstract class
+ */
 class State {
     protected:
         bool popRequested;

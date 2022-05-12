@@ -56,18 +56,29 @@ void StageState::LoadAssets() {
     tm->box.y = 0;
     this->AddObject(tm);
 
+    // player starting position
+    Vec2 penguinPos(INITIAL_X, INITIAL_Y);
+
     // adds the aliens
     for(int i=0;i<ALIEN_COUNT;i++) {
         GameObject* alien = new GameObject();
-        alien->AddComponent(new Alien(*alien, ALIEN_MINION_COUNT));
-        alien->box.set_center(Vec2(rand()%1390 + 4, rand()%1190+4));
+        alien->AddComponent(new Alien(*alien, ALIEN_MINION_COUNT, i * -0.6));
+        
+        Vec2 alien_pos = penguinPos;
+
+        while(alien_pos.distance(penguinPos) <  500) {
+            alien_pos.x = rand() % 1390 + 4;
+            alien_pos.y = rand() % 1190 + 4;
+        }
+
+        alien->box.set_center(alien_pos);
         this->AddObject(alien);
     }
 
     // adds the penguin to the game screen
     GameObject* penguin = new GameObject();
     penguin->AddComponent(new PenguinBody(*penguin));
-    penguin->box.set_center(Vec2(704,640));
+    penguin->box.set_center(penguinPos);
     Camera::Follow(penguin);
     this->AddObject(penguin);
 

@@ -8,6 +8,13 @@
 #include "Timer.hpp"
 #define BLINK_TIME 1
 
+/**
+ * Text
+ * Manages SDL2 functions for text handling
+ * 
+ * Implemented as a Component since it's meant to be used as an
+ * element of GameObject
+ */
 class Text : public Component {
     public:
         enum TextStyle { SOLID, SHADED, BLENDED }; 

@@ -2,6 +2,8 @@
 #define __STAGE_STATE__
 #define ALIEN_COUNT 4
 #define ALIEN_MINION_COUNT 6
+#define INITIAL_X 704
+#define INITIAL_Y 640
 #include <vector>
 #include <memory>
 #include "GameObject.hpp"

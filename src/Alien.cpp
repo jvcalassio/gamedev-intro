@@ -11,7 +11,7 @@
 
 int Alien::alienCount = 0;
 
-Alien::Alien(GameObject& associated, int nMinions) : 
+Alien::Alien(GameObject& associated, int nMinions, int timeOffset) : 
     Component(associated) {
     Sprite* sp = new Sprite(associated, "assets/img/alien.png");
     Collider* cl = new Collider(associated);
@@ -23,6 +23,7 @@ Alien::Alien(GameObject& associated, int nMinions) :
     state = AlienState::RESTING;
     this->nMinions = nMinions;
 
+    restTimer.Update(timeOffset);
     alienCount++;
 }
 

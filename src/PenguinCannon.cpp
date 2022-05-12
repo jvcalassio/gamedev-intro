@@ -33,7 +33,7 @@ void PenguinCannon::Update(float dt) {
         associated.angleDeg = angle * (180/M_PI);
 
         // shoots bullet
-        if(inp.MousePress(LEFT_MOUSE_BUTTON) && bulletCooldown.Get() >= PENGUIN_BULLET_COOLDOWN) {
+        if(inp.IsMouseDown(LEFT_MOUSE_BUTTON) && bulletCooldown.Get() >= PENGUIN_BULLET_COOLDOWN) {
             this->Shoot();
             bulletCooldown.Restart();
         }
@@ -57,7 +57,7 @@ void PenguinCannon::Shoot() {
     GameObject* go = new GameObject();
 
     Bullet* bl = new Bullet(*go, angle, PENGUIN_BULLET_SPEED, PENGUIN_BULLET_DAMAGE, 
-                            PENGUIN_BULLET_DISTANCE, "assets/img/penguinbullet.png", 3, 0.15f, false);
+                            PENGUIN_BULLET_DISTANCE, "assets/img/penguinbullet.png", 4, 0.10f, false);
     go->box.set_center(associated.box.center() + Vec2(75,0).rotated(angle));
     go->AddComponent(bl);
 
