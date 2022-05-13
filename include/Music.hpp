@@ -2,7 +2,8 @@
 #define __MUSIC__
 #define INCLUDE_SDL_MIXER
 #include <string>
-#include "SDL_include.h"
+#include <memory>
+#include "SDL_include.hpp"
 
 /**
  * Game Music
@@ -10,7 +11,7 @@
  * */
 class Music {
     private:
-        Mix_Music* music;
+        std::shared_ptr<Mix_Music> music;
 
     public:
         Music();

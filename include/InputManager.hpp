@@ -1,6 +1,10 @@
 #ifndef __INPUT_MANAGER__
 #define __INPUT_MANAGER__
 #define INCLUDE_SDL
+#define W_KEY SDLK_w
+#define A_KEY SDLK_a
+#define S_KEY SDLK_s
+#define D_KEY SDLK_d
 #define LEFT_ARROW_KEY SDLK_LEFT
 #define RIGHT_ARROW_KEY SDLK_RIGHT
 #define UP_ARROW_KEY SDLK_UP
@@ -10,7 +14,7 @@
 #define LEFT_MOUSE_BUTTON SDL_BUTTON_LEFT
 #define RIGHT_MOUSE_BUTTON SDL_BUTTON_RIGHT
 #include <unordered_map>
-#include "../include/SDL_include.h"
+#include "SDL_include.hpp"
 
 /**
  * Input Singleton

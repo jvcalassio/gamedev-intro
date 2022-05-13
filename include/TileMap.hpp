@@ -19,7 +19,7 @@ class TileMap : public Component {
         int mapDepth;
 
     public:
-        TileMap(std::string file, TileSet* tileSet, GameObject& associated);
+        TileMap(GameObject& associated, std::string file, TileSet* tileSet);
         void Start();
         void Load(std::string file);
         void SetTileSet(TileSet* tileSet);

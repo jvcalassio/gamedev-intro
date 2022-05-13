@@ -1,8 +1,5 @@
 #include <cmath>
 #include "../include/Vec2.hpp"
-#ifndef M_PI 
-#define M_PI    3.14159265358979323846
-#endif
 
 Vec2::Vec2() {
     this->x = 0.0f;

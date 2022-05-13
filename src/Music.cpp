@@ -6,7 +6,8 @@ Music::Music() {
     music = nullptr;
 }
 
-Music::Music(std::string file) : Music() {
+Music::Music(std::string file) : 
+    Music() {
     Open(file);
 }
 
@@ -16,7 +17,7 @@ Music::~Music() {
 
 void Music::Play(int times) {
     if(IsOpen()) {
-        Mix_PlayMusic(music, times);
+        Mix_PlayMusic(music.get(), times);
     } else {
         std::cout << "sem musica no buffer" << std::endl;
     }

@@ -1,10 +1,11 @@
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
+#define INCLUDE_SDL_TTF
 #include <string>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "../include/SDL_include.h"
+#include "../include/SDL_include.hpp"
 #include "../include/Game.hpp"
 #include "../include/Resources.hpp"
 #include "../include/InputManager.hpp"
@@ -47,17 +48,24 @@ Game::Game(std::string title, int width, int height) {
         exit(0);
     }
 
+    if(TTF_Init() != 0) {
+        std::cout << "ih deu erro ao inicial o sdl ttf: " << SDL_GetError() << std::endl;
+        exit(0);
+    }
+
     Mix_Init(MIX_INIT_OGG);
     if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0) {
         std::cout << "ih deu erro ao iniciar o sdl mixer: " << SDL_GetError() << std::endl;
         exit(0);
     }
     Mix_AllocateChannels(32);
+    Mix_VolumeMusic(20);
+    Mix_Volume(-1, 25);
 
     window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, 
                                 SDL_WINDOWPOS_CENTERED, width, height, 0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    state = new State();
+    storedState = nullptr;
 
     if(window == nullptr || renderer == nullptr) {
         std::cout << "ih deu erro na janela: " << SDL_GetError() << std::endl;
@@ -74,15 +82,29 @@ Game::Game(std::string title, int width, int height) {
  * Unloads SDL2 functions
  * */
 Game::~Game() {
+    if(storedState != nullptr) {
+        storedState = nullptr;
+    }
+
+    while(!stateStack.empty()) {
+        stateStack.pop();
+    }
+
+    // unloads resources
+    Resources::ClearImages();
+    Resources::ClearSounds();
+    Resources::ClearMusics();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     Mix_CloseAudio();
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
 
-State& Game::GetState() {
-    return *state;
+State& Game::GetCurrentState() {
+    return *(stateStack.top().get());
 }
 
 SDL_Renderer* Game::GetRenderer() {
@@ -106,21 +128,60 @@ void Game::CalculateDeltaTime() {
  * Main Game Loop
  * */
 void Game::Run() {
-    InputManager& inp = InputManager::GetInstance();
-    state->Start();
+    if(storedState == nullptr) {
+        return;
+    }
 
-    while(!state->QuitRequested()) {
+    stateStack.push(std::unique_ptr<State>(storedState));
+    stateStack.top().get()->Start();
+    storedState = nullptr;
+    
+    InputManager& inp = InputManager::GetInstance();
+
+    while(!stateStack.empty()) {
+        if(stateStack.top().get()->QuitRequested()) {
+            break;
+        }
+
+        if(stateStack.top().get()->PopRequested()) {
+            stateStack.pop();
+
+            if(!stateStack.empty()) {
+                stateStack.top().get()->Resume();
+            }
+        }
+
+        if(storedState != nullptr) {
+            if(!stateStack.empty()) {
+                stateStack.top().get()->Pause();
+            }
+            stateStack.push(std::unique_ptr<State>(storedState));
+            stateStack.top().get()->Start();
+            storedState = nullptr;
+        }
+
         this->CalculateDeltaTime();
         inp.Update();
-        state->Update(dt);
-        state->Render();
+        
+        if(!stateStack.empty()) {
+            this->GetCurrentState().Update(dt);
+            this->GetCurrentState().Render();
+        }
         SDL_RenderPresent(renderer);
         
         SDL_Delay(16);
+    }
+
+    while(!stateStack.empty()) {
+        stateStack.pop();
     }
 
     // unloads resources
     Resources::ClearImages();
     Resources::ClearSounds();
     Resources::ClearMusics();
+}
+
+void Game::Push(State* state) {
+    storedState = state;
 }

@@ -5,7 +5,7 @@ TileSet::TileSet(int tileWidth, int tileHeight, std::string file) {
     this->tileHeight = tileHeight;
     // empty gameobject since sprite requires a gameobject
     GameObject* go = new GameObject(); 
-    tileSet = new Sprite(file, *go);
+    tileSet = new Sprite(*go, file);
 
     if(tileSet->IsOpen()) {
         this->rows = tileSet->GetWidth() / tileWidth;

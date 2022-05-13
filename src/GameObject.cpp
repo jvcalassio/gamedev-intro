@@ -14,8 +14,8 @@ GameObject::~GameObject() {
  * Starts all this object's components
  * */
 void GameObject::Start() {
-    for(auto&c : components) {
-        c->Start();
+    for(size_t i=0, size=components.size();i<size;i++) {
+        components[i]->Start();
     }
     started = true;
 }
@@ -24,8 +24,8 @@ void GameObject::Start() {
  * Updates all this object's components
  * */
 void GameObject::Update(float dt) {
-    for(auto& c : components) {
-        c->Update(dt);
+    for(size_t i=0, size=components.size();i<size;i++) {
+        components[i]->Update(dt);
     }
 }
 
@@ -34,8 +34,8 @@ void GameObject::Update(float dt) {
  * (if render is implemented)
  * */
 void GameObject::Render() {
-    for(auto& c : components) {
-        c->Render();
+    for(size_t i=0, size=components.size();i<size;i++) {
+        components[i]->Render();
     }
 }
 
@@ -56,7 +56,7 @@ void GameObject::AddComponent(Component* cpt) {
 }
 
 void GameObject::RemoveComponent(Component* cpt) {
-    for(unsigned int i=0;i<components.size();i++) {
+    for(size_t i=0, size=components.size();i<size;i++) {
         if(components[i].get() == cpt) {
             components.erase(components.begin() + i);
         }
@@ -67,8 +67,18 @@ void GameObject::RemoveComponent(Component* cpt) {
  * Get this object's first component of {type} type
  * */
 Component* GameObject::GetComponent(std::string type) {
-    for(auto& c : components) {
-        if(c->Is(type)) return c.get();
+    for(size_t i=0, size=components.size();i<size;i++) {
+        if(components[i]->Is(type)) return components[i].get();
     }
     return nullptr;
+}
+
+/**
+ * Notify all it's Components about the collision
+ * @param other The collided GameObject
+ */
+void GameObject::NotifyCollision(GameObject& other) {
+    for(size_t i=0, size=components.size();i<size;i++) {
+        components[i]->NotifyCollision(other);
+    }
 }
